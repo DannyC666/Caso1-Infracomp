@@ -51,7 +51,6 @@ public class Cell extends Thread{
             }
             //TODO:: todo esto deberia ir en clases aparte para que sea mas legible y entendible
         }else{
-
                 try {
 //                    if (this.row == 1 && this.col == 1) {
 //                        System.out.println("Soy productor para  "+this.row+","+this.col+"" );
