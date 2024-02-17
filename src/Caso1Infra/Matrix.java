@@ -44,7 +44,6 @@ public class Matrix {
         for (int[] pos : posibleNeighbors) {
             int neighborRow = pos[0];
             int neighborCol = pos[1];
-
             if (neighborRow >= 0 && neighborRow < this.dimension && neighborCol >= 0 && neighborCol < this.dimension) {
                 int[] neighborPos = new int[]{neighborRow, neighborCol};
                 neighborsList.add(neighborPos);

@@ -16,16 +16,17 @@ public class Buffer {
             while (this.buff.size() == this.size) {
                 wait();
             }
-            this.buff.add(i);
             notifyAll();
+            this.buff.add(i);
         }
         public synchronized Integer retirar () throws InterruptedException {
-
+            // TODO:  Quitar este while
             while (this.buff.isEmpty() && this.totalProduce>0){
                 wait() ;
             }
+
             Integer a = null;
-            if (this.totalProduce > 0) {
+            if (this.totalProduce > 0 ) {
                 a = (Integer) buff.remove (0) ;
                 notifyAll () ;
                 this.totalProduce--;
