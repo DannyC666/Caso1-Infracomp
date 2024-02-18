@@ -4,10 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, BrokenBarrierException, InterruptedException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         // Crea la matriz segun la dimension dada
         int dimension = Integer.parseInt(reader.readLine());
@@ -17,17 +20,33 @@ public class Main {
         int[][] newMatrix = matrix.getMatrix();
         System.out.println("Tablero de la generacion inicial: ");
         Matrix.printMatrix(newMatrix, dimension);
-        // Crea la barrera y actualiza el estado cuando todos los threads lleguen
-        CyclicBarrier barrierUpdateCell = new CyclicBarrier(dimension*dimension,() ->{
-            System.out.println("Actualizando celdas... ");
-
-        });
-        CyclicBarrier barrierUpdateMatrix = new CyclicBarrier(dimension*dimension,() ->{
-            System.out.println("Tablero de la N generacion: ");
-            Matrix.printMatrix(newMatrix, dimension);
-        });
-        // Crea una matriz de buffers.
         Buffer[][] bufferId = new Buffer[dimension][dimension];
+
+        for (int i = 0; i < 4; i++) {
+            //Contador que verifica si las dos barreras se pasan
+            CountDownLatch latch = new CountDownLatch(2);
+            //Barrera que actualiza el valor de las celdas
+            CyclicBarrier barrierUpdateCell = new CyclicBarrier(dimension*dimension,() ->{
+                System.out.println("Actualizando celdas... ");
+                latch.countDown();
+            });
+            // Barrera que actualiza el tablero
+            int finalI = i;
+            CyclicBarrier barrierUpdateMatrix = new CyclicBarrier(dimension*dimension,() ->{
+                System.out.println("Tablero de la "+ (finalI +1) +" generacion: ");
+                Matrix.printMatrix(newMatrix, dimension);
+                latch.countDown();
+            });
+            runMatrix(bufferId,newMatrix,matrix,barrierUpdateCell,barrierUpdateMatrix);
+            // itera de nuevo (siguiente generacion) , hasta que las dos barreras se pasen correctamente
+            latch.await();
+        }
+
+    }
+
+    public static void runMatrix(Buffer[][] bufferId, int[][] newMatrix, Matrix matrix,
+                                  CyclicBarrier barrierUpdateCell, CyclicBarrier barrierUpdateMatrix){
+
         // Recorre cada celda y por cada una crea un buzon.
         for (int i = 0; i < newMatrix.length; i++) {
             for (int j = 0; j < newMatrix[i].length; j++) {
@@ -48,6 +67,7 @@ public class Main {
                 // Por cada celda, hay un nuevo consumidor que apunta a su respectivo buffer
                 CellConsumer consumerThread = new CellConsumer(valueMatrixConsumer,i,j,bufferId[i][j], neighborsLi.size(), matrix,barrierUpdateCell, barrierUpdateMatrix);
                 consumerThread.start();
+
 
             }
         }
