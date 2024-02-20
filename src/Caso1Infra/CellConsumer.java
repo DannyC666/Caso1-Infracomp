@@ -10,39 +10,52 @@ public class CellConsumer extends Thread{
     private final int row;
     private final int col;
     private final Buffer buff;
-    private int neighbors;
     private int neighborsAlive;
+    private int neighbors;
     private Matrix matrix;
     private final CyclicBarrier barrierCell;
     private final CyclicBarrier barrierMatrix;
 
-    public CellConsumer(boolean alive, int row, int col, Buffer buff, int neighbors, Matrix matrix, CyclicBarrier barrierCell, CyclicBarrier barrierMatrix) {
+    public CellConsumer(boolean alive, int row, int col, Buffer buff, int neighbors,Matrix matrix, CyclicBarrier barrierCell, CyclicBarrier barrierMatrix) {
         this.alive = alive;
         this.row = row;
         this.col = col;
         this.buff = buff;
-        this.neighbors = neighbors;
         this.matrix = matrix;
+        this.neighbors = neighbors;
         this.barrierCell = barrierCell;
         this.barrierMatrix = barrierMatrix;
     }
 
     public void run(){
-            while(true) {
-                try {
-                    Integer i = this.buff.retirar();
-                    if (i == null) {
-//                        System.out.println("La cantidad de vecinos vivos  de " + this.row + "," + this.col + " es: " + this.neighborsAlive + "vecinos");
-
-                        break;
-                    } else {
-                        this.neighborsAlive += i;
-                    }
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-
+        Integer ret;
+        for (int i = 0; i < this.neighbors; i++){
+            try {
+                ret = this.buff.retirar();
+                while(ret == null){
+                    Thread.yield();
+                    ret = this.buff.retirar();
                 }
+                this.neighborsAlive += ret;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
+
+        }
+//        while(true) {
+//                try {
+//
+//                    if (i == null) {
+//                        Thread.yield();
+//                        break;
+//                    } else {
+//                        this.neighborsAlive += i;
+//                    }
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//
+//                }
+//            }
         // Primera barrera que actualiza estados de la matriz
         try {
             barrierCell.await();

@@ -2,29 +2,43 @@ package Caso1Infra;
 
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Matrix {
-    private final int dimension;
+    private int dimension;
     private int[][] matrix ;
-    public Matrix(int dimension){
-        this.dimension = dimension;
-        this.matrix = new int[dimension][dimension];
+    private String filePath;
+    public Matrix(String filePath){
+        this.filePath = filePath;
+
     }
 
     public  void createMatrix() throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+        Scanner scanner = new Scanner(new File(this.filePath));
+        this.dimension = scanner.nextInt();
+        this.matrix = new int[dimension][dimension];
+        ArrayList<ArrayList<Integer>> matrizTemporal = new ArrayList<>();
         for (int i = 0; i < this.dimension; i++) {
-            String rowInput = reader.readLine();
-            String[] row = rowInput.split(" ");
+            String[] valores = scanner.next().split(",");
+            ArrayList<Integer> fila = new ArrayList<>();
+            for (String valor : valores) {
+                int numValue = valor.equals("false") ? 0 : (valor.equals("true") ? 1 : -1);
+                fila.add(numValue);
+            }
+            matrizTemporal.add(fila);
+        }
+        for (int i = 0; i < this.dimension; i++) {
             for (int j = 0; j < this.dimension; j++) {
-                int numValue = row[j].equals("false") ? 0 : (row[j].equals("true") ? 1 : -1);
-                this.matrix[i][j] = numValue;
+                this.matrix[i][j] = matrizTemporal.get(i).get(j);
             }
         }
+        scanner.close();
 
     }
 
@@ -56,6 +70,9 @@ public class Matrix {
         return this.matrix[row][col] == 1;
     }
 
+    public int getDimension() {
+        return dimension;
+    }
 
     public static void printMatrix(int[][] matrix, int dimension){
         for (int i = 0; i < dimension; i++) {

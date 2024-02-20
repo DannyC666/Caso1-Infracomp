@@ -16,18 +16,19 @@ public class Buffer {
             while (this.buff.size() == this.size) {
                 wait();
             }
-            notifyAll();
             this.buff.add(i);
+            notify();
         }
         public synchronized Integer retirar () throws InterruptedException {
-            while (this.buff.isEmpty() && this.totalProduce>0){
-                wait() ;
+            Integer a;
+            if (this.buff.isEmpty()){
+                 a = null;
             }
-            Integer a = null;
-            if (this.totalProduce > 0 ) {
+
+            else {
                 a = (Integer) buff.remove (0) ;
-                notifyAll () ;
-                this.totalProduce--;
+                notify (); ;
+
             }
             return a ;
 
