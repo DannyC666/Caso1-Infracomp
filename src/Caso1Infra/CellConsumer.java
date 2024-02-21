@@ -6,7 +6,6 @@ import java.util.concurrent.CyclicBarrier;
 
 public class CellConsumer extends Thread{
     private boolean alive ;
-
     private final int row;
     private final int col;
     private final Buffer buff;
@@ -42,20 +41,6 @@ public class CellConsumer extends Thread{
             }
 
         }
-//        while(true) {
-//                try {
-//
-//                    if (i == null) {
-//                        Thread.yield();
-//                        break;
-//                    } else {
-//                        this.neighborsAlive += i;
-//                    }
-//                } catch (InterruptedException e) {
-//                    throw new RuntimeException(e);
-//
-//                }
-//            }
         // Primera barrera que actualiza estados de la matriz
         try {
             barrierCell.await();

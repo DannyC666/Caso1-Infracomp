@@ -2,6 +2,7 @@ package Caso1Infra;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
@@ -9,10 +10,19 @@ import java.util.concurrent.CyclicBarrier;
 
 public class Main {
     public static void main(String[] args) throws IOException, BrokenBarrierException, InterruptedException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Ingrese la ruta del archivo: ");
+        String rutaArchivo = scanner.nextLine();
+
+        // Verificar si la ruta del archivo es válida
+        File archivo = new File(rutaArchivo);
+        if (!archivo.exists() || !archivo.isFile()) {
+            System.out.println("Ruta no válida. Se usará la ruta predeterminada: src/InputCases/inputs");
+            rutaArchivo = "src/InputCases/inputs";
+        }
         // Crea la matriz segun la dimension dada del archivo en la ruta
-        Matrix matrix = new Matrix("src/InputCases/inputs");
+        Matrix matrix = new Matrix(rutaArchivo);
         matrix.createMatrix();
         int dimension = matrix.getDimension();
         // Obtiene la matriz e imprime el estado 0

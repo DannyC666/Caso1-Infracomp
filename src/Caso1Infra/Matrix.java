@@ -19,7 +19,6 @@ public class Matrix {
     }
 
     public  void createMatrix() throws IOException {
-
         Scanner scanner = new Scanner(new File(this.filePath));
         this.dimension = scanner.nextInt();
         this.matrix = new int[dimension][dimension];
